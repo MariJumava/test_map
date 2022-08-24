@@ -1,0 +1,6204 @@
+openapi: 3.0.0
+info:
+  version: 4.3.1
+  title: FaceNV
+tags:
+  - name: 'Cameras, zones'
+    description: ''
+  - name: Event logs
+    description: ''
+  - name: Index
+    description: ''
+  - name: Faces
+    description: ''
+  - name: People
+    description: ''
+  - name: External tables
+    description: ''
+  - name: System integr
+    description: ''
+  - name: Licences
+    description: ''
+  - name: Login
+    description: ''
+  - name: 'Users, roles, actions'
+    description: ''
+  - name: Server
+    description: ''
+  - name: Info
+    description: ''
+servers:
+  - url: 'https://10.3.1.184:5010'
+  - url: 'https://10.3.1.69:5010'
+paths:
+  /api/get_camera_info:
+    get:
+      tags:
+        - 'Cameras, zones'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/camera'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_all_cameras:
+    get:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: page
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: '1'
+        - name: page_len
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: '1'
+        - name: sorting_type
+          in: query
+          required: false
+          description: Sorting type can be 'name' or 'last_seen'
+          schema:
+            type: string
+            example: name
+        - name: sorting_order
+          in: query
+          required: false
+          description: Sorting order can be either 'asc' or 'desc'
+          schema:
+            type: string
+            example: asc
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      cameras:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/camera'
+                      num_elems:
+                        type: integer
+                        example: '12'
+                      num_pages:
+                        type: integer
+                        example: '3'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  '/api/get_camera_info_by_id/{camera_id}':
+    get:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: camera_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: '1'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    $ref: '#/components/schemas/camera'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_camera:
+    post:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: name
+          required: true
+          in: query
+          schema:
+            type: string
+            example: kitchen
+        - name: address
+          required: true
+          in: query
+          schema:
+            type: string
+            example: ''
+        - name: interval
+          required: false
+          in: query
+          schema:
+            type: number
+            example: '0.1'
+            default: '0.5'
+        - name: distance_threshold
+          required: false
+          in: query
+          schema:
+            type: number
+            example: '1.18'
+            default: '1.18'
+        - name: criteria_k
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '3'
+            default: '3'
+        - name: criteria_m
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '4'
+            default: '4'
+        - name: icon_updating_interval
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '5'
+            default: '5'
+        - name: box_min_size
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '40'
+            default: '40'
+        - name: box_max_size
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '1000'
+            default: '1000'
+        - name: yaw_threshold
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '40'
+            default: '40'
+        - name: quality_threshold
+          required: false
+          in: query
+          schema:
+            type: number
+            example: '0.0'
+            default: '0.0'
+        - name: reset_time
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '5'
+            default: '5'
+        - name: sim_threshold
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '50'
+            default: '50'
+        - name: object_id
+          required: False
+          in: query
+          schema:
+            type: integer
+            example: '2'
+        - name: camera_type
+          required: true
+          in: query
+          schema:
+            type: integer
+            example: '1'
+        - name: connect_id
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '123'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/change_camera_parameters:
+    put:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: camera_id
+          required: true
+          in: query
+          schema:
+            type: integer
+        - name: name
+          required: false
+          in: query
+          schema:
+            type: string
+            example: kitchen
+        - name: address
+          required: false
+          in: query
+          schema:
+            type: string
+            example: ''
+        - name: interval
+          required: false
+          in: query
+          schema:
+            type: number
+            example: '0.1'
+        - name: distance_threshold
+          required: false
+          in: query
+          schema:
+            type: number
+            example: '1.18'
+        - name: criteria_k
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '3'
+        - name: criteria_m
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '4'
+        - name: icon_updating_interval
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '5'
+        - name: box_min_size
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '40'
+        - name: box_max_size
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '1000'
+        - name: yaw_threshold
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '40'
+        - name: quality_threshold
+          required: false
+          in: query
+          schema:
+            type: number
+            example: '0.0'
+        - name: reset_time
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '5'
+        - name: sim_threshold
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '50'
+        - name: object_id
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: '2'
+        - name: connect_id
+          required: false
+          schema:
+            type: integer
+            example: '321'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  '/api/turn_on_camera/{camera_id}':
+    put:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: camera_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  '/api/turn_off_camera/{camera_id}':
+    put:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: camera_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  '/api/delete_camera_by_id/{camera_id}':
+    delete:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: camera_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_zones:
+    get:
+      tags:
+        - 'Cameras, zones'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/zone'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_zones_by_camera_id:
+    get:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: camera_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/zone'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_zone:
+    post:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: camera_id
+          required: true
+          in: query
+          schema:
+            type: integer
+        - name: tl_x
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: tl_y
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: br_x
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: br_y
+          required: true
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  '/api/delete_zone_by_id/{zone_id}':
+    delete:
+      tags:
+        - 'Cameras, zones'
+      parameters:
+        - name: zone_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_events_dates:
+    get:
+      tags:
+        - Event logs
+      parameters:
+        - name: begin_time
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2019-06-01 00:00:00'
+        - name: end_time
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2019-06-01 00:00:00'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      type: string
+                      example: 'Fri, 19 Apr 2019 00:00:00 GMT'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_events_full_info:
+    get:
+      tags:
+        - Event logs
+      parameters:
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: object
+            description: >-
+              If 'end_time' is not specified, all rows starting from
+              'begin_time' will be returned; if 'end_id' is not specified, all
+              rows starting from 'begin_id' will be returned
+            properties:
+              begin_time:
+                type: string
+                example: '2019-06-01 00:00:00'
+              end_time:
+                type: string
+                example: '2019-06-01 00:00:00'
+              begin_id:
+                type: integer
+                example: '2019-06-01 00:00:00'
+              end_id:
+                type: integer
+                example: '2019-06-01 00:00:00'
+              last_n_lines:
+                type: integer
+                example: '100'
+              first_n_lines:
+                type: integer
+                example: '200'
+            minProperties: 0
+            maxProperties: 6
+        - in: query
+          name: additional_filter
+          required: false
+          schema:
+            type: object
+            description: ''
+            properties:
+              person_id:
+                type: integer
+                example: '100'
+              status:
+                type: integer
+                example: '0'
+              camera_name:
+                type: string
+                example: kitchen
+              camera_id:
+                type: integer
+                example: '23'
+              object_id:
+                type: integer
+                example: '5'
+            minProperties: 0
+            maxProperties: 5
+        - in: query
+          name: sorting_params
+          required: false
+          schema:
+            type: object
+            description: ''
+            properties:
+              sorting_type:
+                description: >-
+                  Sorting type can be 'name', 'age', 'event_time' or
+                  'similarity'
+                type: string
+                example: event_time
+              sorting_order:
+                description: Sorting order can be 'asc' or 'desc'
+                type: string
+                example: asc
+            minProperties: 0
+            maxProperties: 2
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '3'
+        - name: page_len
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '300'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      num_elems:
+                        type: integer
+                        example: '501745'
+                      num_pages:
+                        type: integer
+                        example: '5018'
+                      logs:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/event_full_log'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_archive_filters:
+    get:
+      tags:
+        - Event logs
+      parameters:
+        - in: query
+          name: period_filter
+          required: false
+          schema:
+            type: object
+            description: >-
+              Required parameters: 'begin_time' and 'end_time'(if 'end_time' is
+              not specified, all rows starting at 'begin_time' will be returned)
+              or 'begin_id' and 'end_id'(if 'end_id' is not specified, all rows
+              starting at 'begin_id' will be returned)
+            properties:
+              begin_time:
+                type: string
+                example: '2019-06-01 00:00:00'
+              end_time:
+                type: string
+                example: '2019-06-01 00:00:00'
+              begin_id:
+                type: integer
+                example: '2019-06-01 00:00:00'
+              end_id:
+                type: integer
+                example: '2019-06-01 00:00:00'
+            minProperties: 0
+            maxProperties: 2
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: object
+            description: ''
+            properties:
+              last_n_lines:
+                type: integer
+                example: '100'
+              first_n_lines:
+                type: integer
+                example: '200'
+            minProperties: 0
+            maxProperties: 1
+        - in: query
+          name: additional_filter
+          required: false
+          schema:
+            type: object
+            description: ''
+            properties:
+              person_id:
+                type: integer
+                example: '100'
+              status:
+                type: integer
+                example: '0'
+              camera_name:
+                type: string
+                example: kitchen
+              object_id:
+                type: integer
+                example: '5'
+            minProperties: 0
+            maxProperties: 4
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      num_elems:
+                        type: integer
+                        example: '501745'
+                      camera_names:
+                        type: array
+                        items:
+                          type: string
+                          example: kitchen
+                      fios:
+                        type: object
+                        properties:
+                          person_id_1:
+                            type: string
+                            example: person_full_name_1
+                          person_id_2:
+                            type: string
+                            example: person_full_name_2
+                          person_id_3:
+                            type: string
+                            example: person_full_name_3
+                          person_id_n:
+                            type: string
+                            example: person_full_name_n
+                      object_ids:
+                        type: array
+                        items:
+                          type: integer
+                          example: '5'
+                      max_event_time:
+                        type: string
+                        example: 'Fri, 21 Jun 2019 16:26:12 GMT'
+                      min_event_time:
+                        type: string
+                        example: 'Fri, 19 Apr 2019 08:36:01 GMT '
+                      statuses:
+                        type: array
+                        items:
+                          type: integer
+                          example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_events_in_interval:
+    get:
+      tags:
+        - Event logs
+      parameters:
+        - name: begin
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2019-06-01 00:00:00'
+        - name: end
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2019-06-01 00:00:00'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/event_log'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_live_face_log:
+    get:
+      tags:
+        - Event logs
+      parameters:
+        - name: last_n_lines
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '3'
+        - name: last_n_seconds
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '300'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        lastlog_id:
+                          type: integer
+                          example: '23'
+                        event_time:
+                          type: string
+                          example: 'Wed, 12 Jun 2019 04:29:01 GMT'
+                        similarity:
+                          type: number
+                          example: null
+                        fio:
+                          type: string
+                          example: Ivanov Ivan
+                        status:
+                          type: integer
+                          example: '1'
+                        camname:
+                          type: string
+                          example: kitchen
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_events_in_interval_by_face:
+    post:
+      tags:
+        - Event logs
+      parameters:
+        - name: upload_file
+          in: query
+          required: false
+          schema:
+            type: string
+            format: binary
+        - name: image_ref
+          in: query
+          required: false
+          schema:
+            type: string
+            example: >-
+              static/FoundFaces/0_2019-08-19
+              15:20:05_faces-addiction-1200px-1-1200x767.jpg'
+        - name: begin_time
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2019-06-20 16:37:00'
+        - name: end_time
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2029-06-20 16:37:00'
+        - name: similarity
+          in: query
+          required: false
+          schema:
+            type: number
+            example: '0.5'
+        - name: first_n_lines
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '300'
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '1'
+        - name: page_len
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '300'
+        - in: query
+          name: additional_filter
+          required: false
+          schema:
+            type: object
+            description: ''
+            properties:
+              person_id:
+                type: integer
+                example: '100'
+              status:
+                type: integer
+                example: '0'
+              camera_id:
+                type: integer
+                example: '23'
+            minProperties: 0
+            maxProperties: 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      num_elems:
+                        type: integer
+                        example: '501745'
+                      num_pages:
+                        type: integer
+                        example: '5018'
+                      logs:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/event_log'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  '/api/get_image/{image_ref}':
+    get:
+      tags:
+        - Event logs
+      parameters:
+        - name: image_ref
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_log_images_by_ids:
+    delete:
+      tags:
+        - Event logs
+      parameters:
+        - name: camera_log_ids
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '[1, 5, 67, 897]'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_log_images:
+    delete:
+      tags:
+        - Event logs
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+        
+  /api2/get_events_stream:
+    get:
+      tags:
+        - Event logs
+      summary: ''
+      description: Getting stream of events with SSE
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/event-stream:
+              schema:
+                type: array
+                format: chunked
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      example: OK
+                    data:
+                      type: object
+                      properties:
+                        num_elems:
+                          type: integer
+                          example: '1'
+                        num_pages:
+                          type: integer
+                          example: '1'
+                        logs:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/event_full_log'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+
+
+  /api/update_index:
+    get:
+      tags:
+        - Index
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_face:
+    post:
+      tags:
+        - Faces
+      parameters:
+        - name: upload_file
+          in: query
+          required: true
+          schema:
+            type: string
+            example: binary
+        - in: query
+          name: person_id_filter
+          required: true
+          schema:
+            type: object
+            description: ''
+            properties:
+              person_id:
+                type: integer
+                example: '54'
+              external_person_id:
+                type: integer
+                example: '34'
+            minProperties: 1
+            maxProperties: 1
+        - name: external_face_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '34'
+        - name: use_as_default_face_id
+          in: query
+          required: false
+          description: By default this parameter set as 'False'
+          schema:
+            type: boolean
+            example: 'True'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/find_faces:
+    post:
+      tags:
+        - Faces
+      parameters:
+        - name: upload_file
+          in: query
+          required: true
+          schema:
+            type: string
+            example: binary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  files:
+                    type: array
+                    items:
+                      type: string
+                      example: /api/get_image/static/FoundFaces/picture_with_face.jpg
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  '/api/get_faces_by_person_id/{person_id}':
+    get:
+      tags:
+        - Faces
+      parameters:
+        - name: person_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: '2'
+                      image_ref:
+                        type: string
+                        example: /api/get_image/static/FoundFaces/picture_with_face.jpg
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/find_describe_faces:
+    post:
+      tags:
+        - Faces
+      parameters:
+        - name: upload_file
+          in: query
+          required: true
+          schema:
+            type: string
+            example: binary
+        - name: image_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '3'
+        - name: connect_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 88
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  image_id:
+                    type: string
+                    example: '54'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/described_face'
+        '200 with connect_id':
+          description: succesful operation with connect_id in query params and virtual camera wich turned on
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  image_id:
+                    type: string
+                    example: '54'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/event_full_log'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_face:
+    get:
+      tags:
+        - Faces
+      parameters:
+        - in: query
+          name: id_filter
+          required: true
+          schema:
+            type: object
+            description: ''
+            properties:
+              id:
+                type: integer
+                example: '54'
+              external_id:
+                type: integer
+                example: '34'
+            minProperties: 1
+            maxProperties: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: '5'
+                      person_id:
+                        type: integer
+                        example: '2'
+                      image_ref:
+                        type: string
+                        example: >-
+                          /api/get_image/storage/Persons/aaaa_47/2019-06-21_10_27_14_042965.jpg
+                      external_id:
+                        type: integer
+                        example: '56'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/find_add_face:
+    post:
+      tags:
+        - Faces
+      parameters:
+        - name: upload_file
+          in: query
+          required: true
+          schema:
+            type: string
+            example: binary
+        - in: query
+          name: person_id_filter
+          required: true
+          schema:
+            type: object
+            description: ''
+            properties:
+              person_id:
+                type: integer
+                example: '54'
+              external_person_id:
+                type: integer
+                example: '34'
+            minProperties: 1
+            maxProperties: 1
+        - name: external_face_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '34'
+        - name: use_as_default_face_id
+          in: query
+          required: false
+          description: By default this parameter set as 'False'
+          schema:
+            type: boolean
+            example: 'True'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_face:
+    delete:
+      tags:
+        - Faces
+      parameters:
+        - in: query
+          name: person_id_filter
+          required: true
+          schema:
+            type: object
+            description: ''
+            properties:
+              face_id:
+                type: integer
+                example: '54'
+              person_id:
+                type: integer
+                example: '34'
+              external_person_id:
+                type: integer
+                example: '54'
+              external_face_id:
+                type: integer
+                example: '34'
+            minProperties: 1
+            maxProperties: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_person:
+    get:
+      tags:
+        - People
+      parameters:
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: '2'
+              external_id:
+                type: integer
+                example: '2'
+            minProperties: 1
+            maxProperties: 1
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    $ref: '#/components/schemas/person'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_all_person:
+    get:
+      tags:
+        - People
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/person'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_all_people:
+    get:
+      tags:
+        - People
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Ivan
+              sex:
+                type: integer
+                example: '1'
+              begin_birthdate:
+                type: string
+                example: '2019-06-01 00:00:00'
+              end_birthdate:
+                type: string
+                example: '2019-06-01 00:00:00'
+              status:
+                type: integer
+                example: '3'
+              department:
+                type: string
+                example: Security
+              position:
+                type: string
+                example: manager
+            minProperties: 0
+            maxProperties: 7
+        - name: sorting_params
+          in: query
+          required: false
+          schema:
+            type: object
+            description: ''
+            properties:
+              sorting_type:
+                description: Sorting type can be 'name' or 'age'
+                type: string
+                example: event_time
+              sorting_order:
+                description: Sorting order can be 'asc' or 'desc'
+                type: string
+                example: asc
+            minProperties: 0
+            maxProperties: 2
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '3'
+        - name: page_len
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '300'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/person'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_person:
+    post:
+      tags:
+        - People
+      parameters:
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              surname:
+                type: string
+              name:
+                type: string
+              midname:
+                type: string
+              ctime:
+                type: string
+                example: '2019-03-23 03:02:36'
+              position:
+                type: string
+              phone:
+                type: string
+              department:
+                type: string
+              status:
+                type: integer
+              birthdate:
+                type: string
+              sex:
+                type: integer
+              comment:
+                type: string
+              external_id:
+                type: integer
+              default_face_id:
+                type: integer
+            minProperties: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_person:
+    put:
+      tags:
+        - People
+      parameters:
+        - in: query
+          name: id_filter
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: '2'
+              external_id:
+                type: integer
+                example: '2'
+            minProperties: 1
+            maxProperties: 1
+            additionalProperties: false
+        - in: query
+          name: params
+          required: true
+          schema:
+            type: object
+            properties:
+              surname:
+                type: string
+              name:
+                type: string
+              midname:
+                type: string
+              ctime:
+                type: string
+                example: '2019-03-23 03:02:36'
+              position:
+                type: string
+              phone:
+                type: string
+              department:
+                type: string
+              status:
+                type: integer
+              birthdate:
+                type: string
+              sex:
+                type: integer
+              comment:
+                type: string
+              external_id:
+                type: integer
+              default_face_id:
+                type: integer
+            minProperties: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_person:
+    delete:
+      tags:
+        - People
+      parameters:
+        - in: query
+          name: id_filter
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: '2'
+              external_id:
+                type: integer
+                example: '2'
+            minProperties: 1
+            maxProperties: 1
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/verificate_person:
+    get:
+      tags:
+        - People
+      parameters:
+        - in: query
+          name: id_filter
+          required: true
+          schema:
+            type: object
+            properties:
+              person_id:
+                type: integer
+                example: '2'
+              external_id:
+                type: integer
+                example: '2'
+            minProperties: 1
+            maxProperties: 1
+        - in: query
+          name: parameter
+          required: true
+          schema:
+            type: object
+            description: >-
+              Required parameters: 'begin' (and 'end' if needed) or
+              'last_n_seconds' or 'event_id'
+            properties:
+              event_id:
+                type: integer
+                example: '2'
+              last_n_seconds:
+                type: integer
+                example: '200'
+              begin:
+                type: string
+                example: '2019-06-01 00:00:00'
+              end:
+                type: string
+                example: '2019-06-01 00:00:00'
+            minProperties: 1
+            maxProperties: 1
+        - name: camera_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: zone_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      verification_status:
+                        type: string
+                        example: OK
+                      face_id:
+                        type: integer
+                        example: '56'
+                      distance:
+                        type: number
+                        example: '0.55'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_all_external_table:
+    get:
+      tags:
+        - External tables
+      parameters:
+        - name: table
+          description: Table name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: integrate_table
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/external_table_row'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_by_id_external_table:
+    get:
+      tags:
+        - External tables
+      parameters:
+        - name: table
+          description: Table name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: integrate_table
+        - name: id
+          description: Row id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: '3'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    $ref: '#/components/schemas/external_table_row'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_external_table:
+    post:
+      tags:
+        - External tables
+      parameters:
+        - name: table
+          description: Table name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: integrate_table
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              property_1:
+                type: string
+              property_2:
+                type: string
+              property_3:
+                type: string
+              property_4:
+                type: string
+              property_5:
+                type: string
+            minProperties: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_external_table:
+    put:
+      tags:
+        - External tables
+      parameters:
+        - name: table
+          description: Table name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: integrate_table
+        - name: id
+          description: Row id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: '3'
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              property_1:
+                type: string
+              property_2:
+                type: string
+              property_3:
+                type: string
+              property_4:
+                type: string
+              property_5:
+                type: string
+            minProperties: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_external_table:
+    delete:
+      tags:
+        - External tables
+      parameters:
+        - name: table
+          description: Table name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: integrate_table
+        - name: id
+          description: Row id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: '3'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_system_integr:
+    get:
+      tags:
+        - System integr
+      parameters:
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: '2'
+              camera_id:
+                type: integer
+                example: '2'
+              zone_id:
+                type: integer
+                example: '2'
+              sys_name:
+                type: string
+                example: integr2
+              sys_id:
+                type: integer
+                example: '5'
+            minProperties: 1
+            maxProperties: 5
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/sys_integr'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_all_system_integr:
+    get:
+      tags:
+        - System integr
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/sys_integr'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_system_integr_log:
+    get:
+      tags:
+        - System integr
+      parameters:
+        - in: query
+          name: filter
+          required: true
+          description: 'Required parameters: ''begin'' and ''end'' or ''last_n_seconds'''
+          schema:
+            type: object
+            properties:
+              begin:
+                type: string
+                example: '2019-06-01 00:00:00'
+              end:
+                type: string
+                example: '2019-06-11 00:00:00'
+              last_n_seconds:
+                type: integer
+                example: '200'
+            minProperties: 1
+            maxProperties: 2
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/sys_integr_log'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_system_integr:
+    post:
+      tags:
+        - System integr
+      parameters:
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              camera_id:
+                type: integer
+                example: '2'
+              zone_id:
+                type: integer
+                example: '2'
+              sys_name:
+                type: string
+                example: integr2
+              sys_id:
+                type: integer
+                example: '5'
+            minProperties: 1
+            maxProperties: 4
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_system_integr:
+    put:
+      tags:
+        - System integr
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              camera_id:
+                type: integer
+                example: '2'
+              zone_id:
+                type: integer
+                example: '2'
+              sys_name:
+                type: string
+                example: integr2
+              sys_id:
+                type: integer
+                example: '5'
+            minProperties: 1
+            maxProperties: 4
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_system_integr:
+    delete:
+      tags:
+        - System integr
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_licence_info:
+    get:
+      tags:
+        - Licences
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/licence'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/activate_licence:
+    post:
+      tags:
+        - Licences
+      parameters:
+        - name: activation_file
+          in: query
+          description: file to upload
+          required: true
+          schema:
+            type: string
+            format: bynary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_product_code:
+    post:
+      tags:
+        - Licences
+      parameters:
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              licence_number:
+                type: string
+                example: fe34b0e0-f28d-4240-b662-25253d90e9f5
+              licence_file:
+                type: string
+                format: bynary
+            minProperties: 1
+            maxProperties: 1
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  licenseNumber:
+                    type: string
+                    example: aee837ad-ed4c-44df-9d76-9c6dcf0562af
+                  productCode:
+                    type: string
+                    example: >-
+                      VReqoz6mXaRCpsuo4BSAJ2HjwjvE7e09A/QB5/cE/sYMfPXbQNuE0KrgQlEPWvUWXG+BrcgCAhdv5d3IneXfp/05ZH2oZ7riUoGgfKFvz9cjhQiKieENeyB3JNmmZv28
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_default_public_key:
+    post:
+      tags:
+        - Licences
+      parameters:
+        - name: public_key_file
+          in: query
+          description: file to upload
+          required: true
+          schema:
+            type: string
+            format: bynary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/deactivate_licence:
+    post:
+      tags:
+        - Licences
+      parameters:
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              licence_number:
+                type: string
+                example: fe34b0e0-f28d-4240-b662-25253d90e9f5
+              licence_file:
+                type: string
+                format: bynary
+            minProperties: 1
+            maxProperties: 1
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  licenseNumber:
+                    type: string
+                    example: aee837ad-ed4c-44df-9d76-9c6dcf0562af
+                  deactivationKey:
+                    type: string
+                    example: >-
+                      VReqoz6mXaRCpsuo4BSAJ2HjwjvE7e09A/QB5/cE/sYMfPXbQNuE0KrgQlEPWvUWXG+BrcgCAhdv5d3IneXfp/05ZH2oZ7riUoGgfKFvz9cjhQiKieENeyB3JNmmZv28
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_licence:
+    post:
+      tags:
+        - Licences
+      parameters:
+        - in: query
+          name: filter
+          required: true
+          schema:
+            type: object
+            properties:
+              licence_number:
+                type: string
+                example: fe34b0e0-f28d-4240-b662-25253d90e9f5
+              licence_file:
+                type: string
+                format: bynary
+            minProperties: 1
+            maxProperties: 1
+            additionalProperties: false
+      responses:
+        '200':
+          description: successful operation
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /login:
+    get:
+      tags:
+        - Login
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refresh_token:
+                    type: string
+                    example: >-
+                      eyJhbGciOiJIUzUxMiIsImV4cCI6MTU2MTEyMDQwNSwiaWF0IjoxNTYxMTEzMjA1fQ
+                  access_token:
+                    type: string
+                    example: eJwNyzEOgzAMQNGrVJ6him3ikNwmJG4VqQFUkBiq3h1Pf3n_B3s
+                  actions:
+                    type: array
+                    items:
+                      type: string
+                      example: ACCESSGL_FNV
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+        - basicAuth:
+            - 'admin:123456'
+  /refresh_access_token:
+    get:
+      tags:
+        - Login
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: eJwNyzEOgzAMQNGrVJ6him3ikNwmJG4VqQFUkBiq3h1Pf3n_B3s
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Access denied
+      security:
+        - bearerAuth: []
+  /api/get_user:
+    get:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    $ref: '#/components/schemas/user'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_users:
+    get:
+      tags:
+        - 'Users, roles, actions'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/user'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_current_user:
+    get:
+      tags:
+        - 'Users, roles, actions'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: '1'
+                      login:
+                        type: string
+                        example: user543
+                      ip:
+                        type: string
+                        example: 10.3.2.365
+                      fio:
+                        type: string
+                        example: Ivan Ivanov
+                      duty:
+                        type: string
+                        example: pilot
+                      phone:
+                        type: string
+                        example: 8 017 289-80-48
+                      dolgnost:
+                        type: string
+                        example: pilot
+                      email:
+                        type: string
+                        example: qwerty@qwerty.qwe
+                      name_role:
+                        type: string
+                        example: user1
+                      id_role:
+                        type: number
+                        example: '2'
+                      actions:
+                        type: array
+                        items:
+                          type: string
+                          example: ACCESSGL_FNV
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_user:
+    post:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: login
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: fio
+          in: query
+          required: true
+          schema:
+            type: string
+            example: Ivan Ivanov
+        - name: id_role
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: ip
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: duty
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: phone
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dolgnost
+          in: query
+          required: false
+          schema:
+            type: string
+            example: pilot
+        - name: email
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_user:
+    put:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: login
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: fio
+          in: query
+          required: false
+          schema:
+            type: string
+            example: Ivan Ivanov
+        - name: id_role
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: ip
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: duty
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: phone
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dolgnost
+          in: query
+          required: false
+          schema:
+            type: string
+            example: pilot
+        - name: email
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_current_user:
+    put:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: login
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: old_password
+          in: query
+          required: false
+          description: Required only if 'password' parameter is set
+          schema:
+            type: string
+        - name: fio
+          in: query
+          required: false
+          schema:
+            type: string
+            example: Ivan Ivanov
+        - name: id_role
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: ip
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: duty
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: phone
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dolgnost
+          in: query
+          required: false
+          schema:
+            type: string
+            example: pilot
+        - name: email
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_user:
+    delete:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id
+          required: true
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_roles:
+    get:
+      tags:
+        - 'Users, roles, actions'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/role'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_role:
+    get:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: '1'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                      id_role:
+                        type: integer
+                      id_type_role:
+                        type: integer
+                      name_role:
+                        type: string
+                      actions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/action'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_role:
+    post:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: name_role
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: description
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: id_type_role
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_role:
+    put:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: name_role
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: description
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: id_type_role
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_role:
+    delete:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_actions:
+    get:
+      tags:
+        - 'Users, roles, actions'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/action'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_action:
+    put:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: full_name_action
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_role_action:
+    post:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id_role
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: action_ids
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_role_action:
+    delete:
+      tags:
+        - 'Users, roles, actions'
+      parameters:
+        - name: id_role
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: action_ids
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_allowed_actions:
+    get:
+      tags:
+        - 'Users, roles, actions'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_all_objects:
+    get:
+      tags:
+        - Objects
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/object'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_object:
+    get:
+      tags:
+        - Objects
+      parameters:
+        - name: id
+          description: Object id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: '2'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    $ref: '#/components/schemas/object'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/add_object:
+    post:
+      tags:
+        - Objects
+      parameters:
+        - name: name
+          description: Object name
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 'Code'
+        - name: code
+          description: Object code
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 'DaVinci'
+        - name: type
+          in: query
+          description: Object type
+          required: true
+          schema:
+            type: integer
+            example: 31300
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: '1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/change_object:
+    put:
+      tags:
+        - Objects
+      parameters:
+        - name: id
+          description: Object id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: '2'
+        - name: name
+          description: Object name
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 'Code'
+        - name: code
+          description: Object code
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 'DaVinci'
+        - name: type
+          in: query
+          description: Object type
+          required: false
+          schema:
+            type: integer
+            example: 31300
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/delete_object:
+    delete:
+      tags:
+        - Objects
+      parameters:
+        - name: id
+          description: Object id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: '2'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_all_objects_type:
+    get:
+      tags:
+        - Objects
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/object_type'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_settings:
+    get:
+      tags:
+        - Server
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      cam_log_index_max_elements:
+                        type: integer
+                        example: '100000'
+                      db_index_max_elements:
+                        type: integer
+                        example: '100000'
+                      ft_dist_verif_threshold:
+                        type: number
+                        example: '0.97'
+                      ft_min_events_num:
+                        type: integer
+                        example: '2'
+                      ft_time_limit:
+                        type: integer
+                        example: '3'
+                      ft_time_repetition:
+                        type: integer
+                        example: '100000'
+                      hi_daily_index_time:
+                        type: string
+                        example: '05:30'
+                      hi_daily_load_time:
+                        type: string
+                        example: '01:00'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/reboot_server:
+    get:
+      tags:
+        - Server
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/update_settings:
+    put:
+      tags:
+        - Server
+      parameters:
+        - name: cam_log_index_max_elements
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '100000'
+        - name: db_index_max_elements
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '100000'
+        - name: ft_dist_verif_threshold
+          in: query
+          required: false
+          schema:
+            type: number
+            example: '0.97'
+        - name: ft_min_events_num
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '2'
+        - name: ft_time_limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '3'
+        - name: ft_time_repetition
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '5'
+        - name: hi_daily_index_time
+          in: query
+          required: false
+          schema:
+            type: string
+            example: '05:30'
+        - name: hi_daily_load_time
+          in: query
+          required: false
+          schema:
+            type: string
+            example: '02:30'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/get_version:
+    get:
+      tags:
+        - Info
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      SHA:
+                        type: string
+                        example: 8e43e0091debd2303d93003d13ca03b950b2723e
+                      TAG:
+                        type: string
+                        example: v2.0.0
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/health_check:
+    get:
+      tags:
+        - Info
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        class:
+                          type: string
+                          example: AnalyticsManager
+                        status:
+                          type: string
+                          example: OK
+                        time:
+                          type: string
+                          example: '2019-06-18 12:57:30'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        default:
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Unauthorized Access
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+  /api/get_cluster_stat:
+    post:
+      tags:
+        - Clustering
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2019-09-03'
+        - name: stat_period
+          description: 'Stat_period can either ''month'', ''week'' or ''day'''
+          in: query
+          required: true
+          schema:
+            type: string
+            example: month
+        - name: age_group
+          in: query
+          required: true
+          schema:
+            type: string
+            example: 3-15
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      clusters_num:
+                        type: integer
+                        example: '450'
+                      noise_len:
+                        type: integer
+                        example: '131682'
+                      stat:
+                        type: object
+                        properties:
+                          age:
+                            type: object
+                            properties:
+                              3-15:
+                                type: object
+                                properties:
+                                  num:
+                                    type: integer
+                                    example: '378'
+                                  per:
+                                    type: integer
+                                    example: '80'
+                              16-30:
+                                type: object
+                                properties:
+                                  num:
+                                    type: integer
+                                    example: '20'
+                                  per:
+                                    type: integer
+                                    example: '10'
+                          afroamerican:
+                            type: object
+                            properties:
+                              num:
+                                type: integer
+                                example: '38'
+                              per:
+                                type: integer
+                                example: '8'
+                          asianindian:
+                            type: object
+                            properties:
+                              num:
+                                type: integer
+                                example: '0'
+                              per:
+                                type: integer
+                                example: '0'
+                          caucasian:
+                            type: object
+                            properties:
+                              num:
+                                type: integer
+                                example: '373'
+                              per:
+                                type: integer
+                                example: '83'
+                          eastasian:
+                            type: object
+                            properties:
+                              num:
+                                type: integer
+                                example: '24'
+                              per:
+                                type: integer
+                                example: '5'
+                          latino:
+                            type: object
+                            properties:
+                              num:
+                                type: integer
+                                example: '0'
+                              per:
+                                type: integer
+                                example: '0'
+                          male:
+                            type: object
+                            properties:
+                              num:
+                                type: integer
+                                example: '272'
+                              per:
+                                type: integer
+                                example: '60'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/generate_report:
+    post:
+      tags:
+        - Statistics
+      parameters:
+        - name: begin_date
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2020-05-17 14:30:00'
+        - name: end_date
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2020-06-17 14:30:00'
+        - name: object_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/cancel_report/{report_id}:
+    post:
+      tags:
+        - Statistics
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []  
+  /api/reports_list:
+    get:
+      tags:
+        - Statistics
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/report'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  /api/report_statuses:
+    get:
+      tags:
+        - Statistics
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/report_status'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: [] 
+  /api2/get_vendor_list:
+    get:
+      summary: ''
+      description: getting vendor list and valid versions for each vendor
+      operationId: ''
+      tags:
+        - System integr
+      parameters:
+        - in: query
+          name: vendor_name
+          schema:
+            type: string
+            example: 'COMPLITECH_IM'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      vendor:
+                        type: string
+                        example: 'COMPLITECH_IM'
+                      versions:
+                        type: array
+                        items:
+                          type: string
+                          example: '0.1'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  
+  /api2/add_integrarion:
+    post:
+      tags:
+        - System integr
+      summary: ''
+      description: Linking camera and zone frome one side to integration module with settings from another side
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                camera_id:
+                  type: integer
+                  example: 1
+                zone_id:
+                  type: integer
+                  example: 2
+                vendor_name:
+                  type: string
+                  example: "COMPLITECH_IM"
+                vendor_ver:
+                  type: string
+                  example: "0.1"
+                settings:
+                  type: string
+                  example: '{"url": "http://hostname"}'
+              required:
+                - camera_id
+                - zone_id
+                - vendor_name
+                - vendor_ver
+                - settings
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  id:
+                    type: integer
+                    example: 5
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  
+  /api2/get_integration:
+    get:
+      summary: ''
+      description: Get integration links according filter parameters. Pagination supported
+      operationId: ''
+      tags:
+        - System integr
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 1
+        - in: query
+          name: camera_id
+          schema:
+            type: integer
+            example: 2
+        - in: query
+          name: zone_id
+          schema:
+            type: integer
+            example: 8
+        - in: query
+          name: settings
+          schema:
+            type: string
+            example: {"url": "http:/hostname"}
+        - in: query
+          name: vendor_name
+          schema:
+            type: string
+            example: "COMPLITECH_IM"
+        - in: query
+          name: vendor_ver
+          schema:
+            type: string
+            example: "0.1"
+        - in: query
+          name: page
+          schema:
+            type: integer
+            example: 5
+        - in: query
+          name: page_len
+          schema:
+            type: integer
+            example: 15
+              
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      num_elems:
+                        type: integer
+                        example: 7
+                      num_pages:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            camera_id:
+                              type: integer
+                              example: 61
+                            camera_name:
+                              type: string
+                              example: "5th floor"
+                            zone_id:
+                              type: integer
+                              example: -1
+                            zone_name:
+                              type: string
+                              example: "Whole frame"
+                            vendor_name:
+                              type: string
+                              example: "COMPLITECH_IM"
+                            vendor_ver:
+                              type: string
+                              example: "0.1"
+                            settings:
+                              type: string
+                              example: '{"url": "url_name"}'
+                            
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  
+  /api2/update_integration:
+    put:
+      tags:
+        - System integr
+      summary: ''
+      description: Updating links for integration modules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 5
+                camera_id:
+                  type: integer
+                  example: 1
+                zone_id:
+                  type: integer
+                  example: 2
+                vendor_name:
+                  type: string
+                  example: "COMPLITECH_IM"
+                vendor_ver:
+                  type: string
+                  example: "0.1"
+                settings:
+                  type: string
+                  example: '{"url": "http://hostname"}'
+              required:
+                - id
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+
+  /api2/delete_integration:
+    delete:
+      tags:
+        - System integr
+      summary: ''
+      description: Deleting integration link
+      parameters:
+        - in: query
+          required: true
+          name: id
+          schema:
+            type: integer
+            example: 1
+            
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+  
+  /api2/get_integr_events_stream:
+    get:
+      tags:
+        - System integr
+      summary: ''
+      description: Getting integration events with SSE
+      parameters:
+        - in: query
+          required: true
+          name: vendor_name
+          description: "Name of vendor in supported vendor list"
+          schema:
+            type: string
+            example: 'COMPLITECH_IM'
+        - in: query
+          required: true
+          name: vendor_ver
+          description: 'Version of integration module for vendor from supported vendor list'
+          schema:
+            type: string
+            example: '0.1'
+        - in: query
+          required: false
+          name: statuses
+          description: 'Comma separated statuses for processing (not required): 0 - Allowed, 1 - Banned, 2 - Guest, 3 - VIP'
+          schema:
+            type: string
+            example: '0,3'
+        
+      responses:
+        '200':
+          description: 'Successful operation. Field "integr_settings" contains linked settings for integration module associated with pair "camera_id" "zone_id" '
+          content:
+            text/event-stream:
+              schema:
+                type: array
+                format: chunked
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      example: OK
+                    data:
+                      type: object
+                      properties:
+                        num_elems:
+                          type: integer
+                          example: '1'
+                        num_pages:
+                          type: integer
+                          example: '1'
+                        logs:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/integr_events_log'
+        x-error:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        x-authorizationError:
+          description: Authorization error
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Unauthorized Access
+      security:
+        - basicAuth: []
+        - bearerAuth: []
+
+
+components:
+  schemas:
+    camera:
+      properties:
+        id:
+          type: integer
+          example: '1'
+        name:
+          type: string
+          example: name
+        address:
+          type: string
+          example: 'rtsp://10.3.1.24/defaultPrimary?streamType=u'
+        interval:
+          type: number
+          example: '0.5'
+        last_seen:
+          type: string
+          example: '2019-06-19 13:58:40'
+        on:
+          type: integer
+          example: '1'
+        status:
+          type: integer
+          example: '1'
+        box_max_size:
+          type: integer
+          example: 1000
+        box_min_size:
+          type: integer
+          example: 50
+        criteria_k:
+          type: integer
+          example: 2
+        criteria_m:
+          type: integer
+          example: 3
+        distance_threshold:
+          type: number
+          example: 1.19
+        icon_updating_interval:
+          type: integer
+          example: 5
+        pitch_threshold:
+          type: integer
+          example: 45
+        yaw_threshold:
+          type: integer
+          example: 45
+        quality_threshold:
+          type: number
+          example: 0.1
+        reset_time:
+          type: integer
+          example: 5
+        sim_threshold:
+          type: number
+          example: 85
+        object_id:
+          type: number
+          example: 2
+        camera_type:
+          type: integer
+          example: 0
+        connect_id:
+          type: integer
+          example: 123
+    zone:
+      properties:
+        id:
+          type: integer
+          example: '1'
+        camera_id:
+          type: integer
+          example: '2'
+        tl_x:
+          type: number
+          example: '0.22'
+        tl_y:
+          type: number
+          example: '0.33'
+        br_x:
+          type: number
+          example: '0.44'
+        br_y:
+          type: number
+          example: '0.55'
+    user:
+      properties:
+        id:
+          type: integer
+          example: '1'
+        login:
+          type: string
+          example: user543
+        ip:
+          type: string
+          example: 10.3.2.365
+        fio:
+          type: string
+          example: Ivan Ivanov
+        duty:
+          type: string
+          example: pilot
+        phone:
+          type: string
+          example: 8 017 289-80-48
+        dolgnost:
+          type: string
+          example: pilot
+        email:
+          type: string
+          example: qwerty@qwerty.qwe
+        name_role:
+          type: string
+          example: user1
+        id_role:
+          type: number
+          example: '2'
+    role:
+      properties:
+        description:
+          type: string
+        id_role:
+          type: integer
+        id_type_role:
+          type: integer
+        name_role:
+          type: string
+    action:
+      properties:
+        full_name_action:
+          type: string
+        id_action:
+          type: integer
+        name_action:
+          type: string
+    licence:
+      properties:
+        camNumber:
+          type: integer
+          example: '4'
+        expirationDate:
+          type: string
+          example: '2020-08-31T23:59:59'
+        licenseNumber:
+          type: string
+          example: fe34b0e0-f28d-4240-b662-25253d90e9f5
+        status:
+          type: string
+          example: Activated
+    sys_integr:
+      properties:
+        id:
+          type: integer
+          example: '4'
+        camera_id:
+          type: integer
+          example: '1'
+        zone_id:
+          type: integer
+          example: '1'
+        sys_name:
+          type: string
+          example: integr2
+        sys_id:
+          type: integer
+          example: '6'
+    sys_integr_log:
+      properties:
+        camera_id:
+          type: integer
+          example: '4'
+        image_ref:
+          type: string
+          example: >-
+            /api/get_image/storage/Camera_event_log/2019-06-12_04_29_01_255956_87.jpg
+        similarity:
+          type: number
+          example: '0.033'
+        distance:
+          type: number
+          example: '1.287'
+        event_time:
+          type: string
+          example: 'Wed, 12 Jun 2019 04:29:01 GMT'
+        male:
+          type: integer
+          example: '98'
+        age:
+          type: integer
+          example: '33'
+        caucasian:
+          type: integer
+          example: '99'
+        afroamerican:
+          type: integer
+          example: '0'
+        asianindian:
+          type: integer
+          example: '0'
+        latino:
+          type: integer
+          example: '1'
+        pitch:
+          type: integer
+          example: '10'
+        roll:
+          type: integer
+          example: '-6'
+        yaw:
+          type: integer
+          example: '-5'
+        zone_id:
+          type: integer
+          example: '4'
+        sys_name:
+          type: string
+          example: integr2
+        sys_id:
+          type: integer
+          example: '2'
+    external_table_row:
+      properties:
+        property_1:
+          type: string
+        property_2:
+          type: string
+        property_3:
+          type: string
+        property_4:
+          type: string
+        property_5:
+          type: string
+    person:
+      properties:
+        id:
+          type: integer
+          example: '46'
+        name:
+          type: string
+          example: Ivan
+        midname:
+          type: string
+          example: Ivanovich
+        surname:
+          type: string
+          example: Ivanov
+        image_ref:
+          type: string
+          example: /api/get_image/storage/Persons/bxd_46/2019-06-21_10_22_13_689372.jpg
+        phone:
+          type: string
+          example: 8 017 289-80-48
+        position:
+          type: string
+          example: Captain
+        department:
+          type: string
+          example: Qwerty
+        birthdate:
+          type: string
+          example: ''
+        status:
+          type: integer
+          example: '0'
+        sex:
+          type: integer
+          example: '1'
+        comment:
+          type: string
+          example: ''
+        ctime:
+          type: string
+          example: 'Fri, 21 Jun 2019 10:22:13 GMT'
+        default_face_id:
+          type: integer
+          example: '56'
+        external_id:
+          type: integer
+          example: '34'
+    object:
+      properties:
+        id:
+          type: integer
+          example: '2'
+        code:
+          type: string
+          example: 'DaVinci'
+        name:
+          type: string
+          example: 'Code'
+        type:
+          type: integer
+          example: '31300'
+    object_type:
+      properties:
+        id_c: 
+          type: integer
+          example: '31300'
+        name1:
+          type: string
+          example: 'Floor'
+    event_log:
+      properties:
+        id:
+          type: integer
+          example: '4'
+        camera_id:
+          type: integer
+          example: '4'
+        image_ref:
+          type: string
+          example: >-
+            /api/get_image/storage/Camera_event_log/2019-06-12_04_29_01_255956_87.jpg
+        similarity:
+          type: number
+          example: '0.033'
+        distance:
+          type: number
+          example: '1.287'
+        event_time:
+          type: string
+          example: 'Wed, 12 Jun 2019 04:29:01 GMT'
+        male:
+          type: integer
+          example: '98'
+        age:
+          type: integer
+          example: '33'
+        caucasian:
+          type: integer
+          example: '99'
+        afroamerican:
+          type: integer
+          example: '0'
+        asianindian:
+          type: integer
+          example: '0'
+        eastasian:
+          type: integer
+          example: '0'
+        latino:
+          type: integer
+          example: '1'
+        pitch:
+          type: integer
+          example: '10'
+        roll:
+          type: integer
+          example: '-6'
+        yaw:
+          type: integer
+          example: '-5'
+        person_id:
+          type: integer
+          example: '2'
+    event_full_log:
+      properties:
+        id:
+          type: integer
+          example: '4'
+        track_id:
+          type: string
+          example: '0123461112255'
+        rank:
+          type: number
+          example: '0.47665'
+        camera_id:
+          type: integer
+          example: '4'
+        camera_name:
+          type: string
+          example: kitchen
+        zone_id:
+          type: integer
+          example: '-1'
+        image_ref:
+          type: string
+          example: >-
+            /api/get_image/storage/Camera_event_log/2019-06-12_04_29_01_255956_87.jpg
+        similarity:
+          type: number
+          example: '0.033'
+        distance:
+          type: number
+          example: '1.287'
+        event_time:
+          type: string
+          example: 'Wed, 12 Jun 2019 04:29:01 GMT'
+        male:
+          type: integer
+          example: '98'
+        sex:
+          type: integer
+          example: '2'
+        age:
+          type: integer
+          example: '33'
+        caucasian:
+          type: integer
+          example: '99'
+        afroamerican:
+          type: integer
+          example: '0'
+        asianindian:
+          type: integer
+          example: '0'
+        eastasian:
+          type: integer
+          example: '0'
+        latino:
+          type: integer
+          example: '1'
+        pitch:
+          type: integer
+          example: '10'
+        roll:
+          type: integer
+          example: '-6'
+        yaw:
+          type: integer
+          example: '-5'
+        position:
+          type: integer
+          example: '-5'
+        birthdate:
+          type: string
+          example: 'Wed, 12 Jun 2019 04:29:01 GMT'
+        comment:
+          type: string
+          example: comment
+        default_face_id:
+          type: integer
+          example: '3'
+        default_face_image_ref:
+          type: string
+          example: '/api/get_image/storage/Persons/23/2019-06-12_04_29_01_255956_87.jpg'
+        person_id:
+          type: integer
+          example: '2'
+        midname:
+          type: string
+          example: Ivan
+        person_name:
+          type: string
+          example: Ivan
+        surname:
+          type: string
+          example: Ivanov
+        status:
+          type: integer
+          example: '1'
+        external_id:
+          type: integer
+          example: '23'
+        object_id:
+          type: integer
+          example: '5'
+        object_name:
+          type: string
+          example: Stand
+    integr_events_log:
+      properties:
+        id:
+          type: integer
+          example: '4'
+        track_id:
+          type: string
+          example: '0123461112255'
+        rank:
+          type: number
+          example: '0.47665'
+        camera_id:
+          type: integer
+          example: '4'
+        camera_name:
+          type: string
+          example: kitchen
+        zone_id:
+          type: integer
+          example: '-1'
+        image_ref:
+          type: string
+          example: >-
+            /api/get_image/storage/Camera_event_log/2019-06-12_04_29_01_255956_87.jpg
+        similarity:
+          type: number
+          example: '0.033'
+        distance:
+          type: number
+          example: '1.287'
+        event_time:
+          type: string
+          example: 'Wed, 12 Jun 2019 04:29:01 GMT'
+        male:
+          type: integer
+          example: '98'
+        sex:
+          type: integer
+          example: '2'
+        age:
+          type: integer
+          example: '33'
+        caucasian:
+          type: integer
+          example: '99'
+        afroamerican:
+          type: integer
+          example: '0'
+        asianindian:
+          type: integer
+          example: '0'
+        eastasian:
+          type: integer
+          example: '0'
+        latino:
+          type: integer
+          example: '1'
+        pitch:
+          type: integer
+          example: '10'
+        roll:
+          type: integer
+          example: '-6'
+        yaw:
+          type: integer
+          example: '-5'
+        position:
+          type: integer
+          example: '-5'
+        birthdate:
+          type: string
+          example: 'Wed, 12 Jun 2019 04:29:01 GMT'
+        comment:
+          type: string
+          example: comment
+        default_face_id:
+          type: integer
+          example: '3'
+        default_face_image_ref:
+          type: string
+          example: '/api/get_image/storage/Persons/23/2019-06-12_04_29_01_255956_87.jpg'
+        person_id:
+          type: integer
+          example: '2'
+        midname:
+          type: string
+          example: Ivan
+        person_name:
+          type: string
+          example: Ivan
+        surname:
+          type: string
+          example: Ivanov
+        status:
+          type: integer
+          example: '1'
+        external_id:
+          type: integer
+          example: '23'
+        integr_settings:
+          type: string
+          example: '{"url": "valid_url"}'
+    described_face:
+      properties:
+        bounding_box:
+          type: object
+          properties:
+            Score:
+              type: number
+              example: '0.9984080195426941'
+            br_x:
+              type: integer
+              example: '2263'
+            br_y:
+              type: integer
+              example: '1211'
+            leye_x:
+              type: integer
+              example: '2170'
+            leye_y:
+              type: integer
+              example: '1110'
+            lmouth_x:
+              type: integer
+              example: '2165'
+            lmouth_y:
+              type: integer
+              example: '1170'
+            nose_x:
+              type: integer
+              example: '2184'
+            nose_y:
+              type: integer
+              example: '1155'
+            reye_x:
+              type: integer
+              example: '2224'
+            reye_y:
+              type: integer
+              example: '1122'
+            rmouth_x:
+              type: integer
+              example: '2211'
+            rmouth_y:
+              type: integer
+              example: '1181'
+            tl_x:
+              type: integer
+              example: '2138'
+            tl_y:
+              type: integer
+              example: '1063'
+        distance:
+          type: number
+          example: '1.1563239202841114'
+        image_ref:
+          type: string
+          example: >-
+            /api/get_image/storage/Persons/aaaa_47/2019-06-21_10_27_14_042965.jpg
+        page:
+          type: object
+          properties:
+            age:
+              type: integer
+              example: '25'
+            ethnicity:
+              type: object
+              properties:
+                afroamerican:
+                  type: number
+                  example: '0.00048471844638697803'
+                asianindian:
+                  type: number
+                  example: '0.0007630652980878949'
+                caucasian:
+                  type: number
+                  example: '0.9875670671463013'
+                eastasian:
+                  type: number
+                  example: '0.000489044061396271'
+                latino:
+                  type: number
+                  example: '0.010696154087781906'
+            gender:
+              type: object
+              properties:
+                female:
+                  type: number
+                  example: '0.9838036261498928'
+                male:
+                  type: number
+                  example: '0.016196373850107193'
+            pose:
+              type: object
+              properties:
+                pitch:
+                  type: integer
+                  example: '-11'
+                roll:
+                  type: integer
+                  example: '-13'
+                yaw:
+                  type: integer
+                  example: '17'
+        person:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: '46'
+            name:
+              type: string
+              example: Ivan
+            midname:
+              type: string
+              example: Ivanovich
+            surname:
+              type: string
+              example: Ivanov
+            phone:
+              type: string
+              example: 8 017 289-80-48
+            position:
+              type: string
+              example: Captain
+            department:
+              type: string
+              example: Qwerty
+            birthdate:
+              type: string
+              example: ''
+            status:
+              type: integer
+              example: '0'
+            sex:
+              type: integer
+              example: '1'
+            comment:
+              type: string
+              example: ''
+            ctime:
+              type: string
+              example: 'Fri, 21 Jun 2019 10:22:13 GMT'
+            similarity:
+              type: number
+              example: '0.10827709961530739'
+    report:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: '1'
+        status_id:
+          type: integer
+          example: '1'
+        begin_date:
+          type: string
+          example: '2020-05-17 14:30:00'
+        end_date:
+          type: string
+          example: '2020-06-17 14:30:00'
+        object_name:
+          type: string
+          example: Object
+        unique_guests:
+          type: integer
+          example: 40
+        male:
+          type: integer
+          example: 116
+        male_percentage:
+          type: number
+          example: 46.4
+        female:
+          type: integer
+          example: 134
+        female_percentage:
+          type: number
+          example: 53.6
+        age_range_a: 
+          type: integer
+          example: 40
+        age_range_a_pc:
+          type: number
+          example: 16
+        age_range_a_male:
+          type: integer
+          example: 10
+        age_range_a_male_pc:
+          type: number
+          example: 25
+        age_range_a_female:
+          type: integer
+          example: 30
+        age_range_a_female_pc:
+          type: number
+          example: 75
+        age_range_b: 
+          type: integer
+          example: 80
+        age_range_b_pc:
+          type: number
+          example: 32
+        age_range_b_male:
+          type: integer
+          example: 40
+        age_range_b_male_pc:
+          type: number
+          example: 50
+        age_range_b_female:
+          type: integer
+          example: 40
+        age_range_b_female_pc:
+          type: number
+          example: 50
+        age_range_c: 
+          type: integer
+          example: 130
+        age_range_c_pc:
+          type: number
+          example: 52
+        age_range_c_male:
+          type: integer
+          example: 66
+        age_range_c_male_pc:
+          type: number
+          example: 50.8
+        age_range_c_female:
+          type: integer
+          example: 64
+        age_range_c_female_pc:
+          type: number
+          example: 49.2
+        age_range_d: 
+          type: integer
+          example: 0
+        age_range_d_pc:
+          type: number
+          example: 0
+        age_range_d_male:
+          type: integer
+          example: 0
+        age_range_d_male_pc:
+          type: number
+          example: 0
+        age_range_d_female:
+          type: integer
+          example: 0
+        age_range_d_female_pc:
+          type: number
+          example: 0
+        age_range_e: 
+          type: integer
+          example: 0
+        age_range_e_pc:
+          type: number
+          example: 0
+        age_range_e_male:
+          type: integer
+          example: 0
+        age_range_e_male_pc:
+          type: number
+          example: 0
+        age_range_e_female:
+          type: integer
+          example: 0
+        age_range_e_female_pc:
+          type: number
+          example: 0
+        age_range_f: 
+          type: integer
+          example: 0
+        age_range_f_pc:
+          type: number
+          example: 0
+        age_range_f_male:
+          type: integer
+          example: 0
+        age_range_f_male_pc:
+          type: number
+          example: 0
+        age_range_f_female:
+          type: integer
+          example: 0
+        age_range_f_female_pc:
+          type: number
+          example: 0
+        unique_persons:
+          type: integer
+          example: 20
+        unique_persons_allowed:
+          type: integer
+          example: 19
+        unique_persons_allowed_pc:
+          type: number
+          example: 95
+        unique_persons_banned:
+          type: integer
+          example: 1
+        unique_persons_banned_pc:
+          type: number
+          example: 5
+        unique_persons_vip:
+          type: integer
+          example: 1
+        unique_persons_vip_pc:
+          type: number
+          example: 5
+        other_detections:
+          type: integer
+          example: 48
+    report_status:
+      type: object
+      properties:
+        status_id:
+          type: integer
+          example: 1
+        status_name:
+          type: string
+          example: Данные в обработке
+    errorModel:
+      type: object
+      properties:
+        status:
+          type: string
+          example: FAILED
+        description:
+          type: string
+          example: Bad Parameters
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      description: >-
+        For accessing the API a valid JWT token must be passed in all the
+        queries in the 'Authorization' header. A valid JWT token is generated by
+        the API and retourned as answer of a call to the route /login giving a
+        valid user & password. The following syntax must be used in the
+        'Authorization' header : Bearer: xxxxxx.yyyyyyy.zzzzzz
+      type: http
+      scheme: bearer
